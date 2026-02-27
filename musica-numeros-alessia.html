@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Música y Números 🎵 Alessia</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rose:#FF6B9D; --pink:#FFB3D1; --gold:#FFD700; --purple:#C084FC;
+  --teal:#2DD4BF; --bg:#1a0525; --card:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.14);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;overflow-x:hidden;display:flex;align-items:center;justify-content:center;position:relative;}
+
+/* BG */
+.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.25;animation:orbFloat 8s ease-in-out infinite alternate;}
+.orb1{width:400px;height:400px;background:#C084FC;top:-100px;left:-100px;animation-delay:0s;}
+.orb2{width:300px;height:300px;background:#FF6B9D;bottom:-80px;right:-80px;animation-delay:3s;}
+.orb3{width:250px;height:250px;background:#2DD4BF;top:40%;left:60%;animation-delay:1.5s;}
+@keyframes orbFloat{from{transform:translate(0,0) scale(1)}to{transform:translate(30px,40px) scale(1.1)}}
+
+/* Stars */
+.star-bg{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.s{position:absolute;border-radius:50%;background:white;animation:twink 2s infinite alternate;}
+@keyframes twink{from{opacity:.1}to{opacity:.7}}
+
+.screen{position:relative;z-index:1;width:100%;max-width:760px;padding:12px;text-align:center;display:none;}
+.screen.active{display:block;}
+
+/* ===== PORTADA ===== */
+#screen-cover{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;}
+.cover-title{font-family:'Pacifico',cursive;font-size:clamp(3rem,9vw,6rem);background:linear-gradient(135deg,#FFD700,#FF6B9D,#C084FC,#2DD4BF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(255,107,157,.5));line-height:1.1;animation:titlePop .8s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes titlePop{from{transform:scale(.5) rotate(-5deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.cover-sub{color:var(--pink);font-size:1.2rem;font-weight:700;margin:8px 0 30px;letter-spacing:2px;animation:fadeUp .6s .3s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.music-notes{font-size:3rem;animation:noteDance 1.5s ease-in-out infinite;display:flex;gap:16px;justify-content:center;margin-bottom:20px;}
+@keyframes noteDance{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-15px) rotate(5deg)}}
+.cover-btn{font-family:'Pacifico',cursive;font-size:1.5rem;background:linear-gradient(135deg,#FF6B9D,#C084FC);color:white;border:none;border-radius:40px;padding:18px 52px;cursor:pointer;box-shadow:0 8px 30px rgba(255,107,157,.5);transition:transform .2s,box-shadow .2s;animation:fadeUp .6s .5s both;}
+.cover-btn:hover{transform:translateY(-5px) scale(1.04);box-shadow:0 16px 40px rgba(255,107,157,.6);}
+
+/* ===== CANCIÓN / INTRO ===== */
+#screen-song{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;}
+.song-title{font-family:'Pacifico',cursive;color:var(--gold);font-size:2rem;margin-bottom:20px;}
+.lyrics-box{background:var(--card);border:2px solid var(--border);border-radius:28px;padding:28px 24px;max-width:500px;width:100%;backdrop-filter:blur(16px);box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.lyric-line{color:white;font-size:1.25rem;font-weight:700;line-height:2;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(10px);}
+.lyric-line.show{opacity:1;transform:translateY(0);}
+.lyric-line .num{color:var(--gold);font-size:1.4rem;}
+.progress-song{background:rgba(255,255,255,.1);border-radius:20px;height:8px;margin:24px 0;overflow:hidden;}
+.progress-song-fill{height:100%;background:linear-gradient(90deg,#FF6B9D,#C084FC);border-radius:20px;transition:width .4s;}
+.song-skip-btn{font-family:'Nunito',sans-serif;font-weight:700;background:rgba(255,255,255,.1);border:2px solid var(--border);color:rgba(255,255,255,.7);border-radius:20px;padding:10px 28px;cursor:pointer;font-size:1rem;transition:all .2s;}
+.song-skip-btn:hover{background:rgba(255,255,255,.2);color:white;}
+
+/* ===== BIENVENIDA ===== */
+#screen-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;}
+.welcome-text{font-family:'Pacifico',cursive;font-size:clamp(1.8rem,5vw,3rem);color:white;margin:20px 0;line-height:1.4;}
+.welcome-text span{color:var(--gold);}
+.start-game-btn{font-family:'Pacifico',cursive;font-size:1.4rem;background:linear-gradient(135deg,#2DD4BF,#C084FC);color:white;border:none;border-radius:40px;padding:18px 52px;cursor:pointer;box-shadow:0 8px 30px rgba(45,212,191,.4);transition:transform .2s;margin-top:20px;}
+.start-game-btn:hover{transform:translateY(-4px) scale(1.04);}
+
+/* ===== JUEGO ===== */
+#screen-game{display:block;}
+.top-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+.coin-display{display:flex;align-items:center;gap:8px;background:rgba(255,215,0,.15);border:2px solid rgba(255,215,0,.4);border-radius:30px;padding:8px 18px;}
+.coin-icon{font-size:1.6rem;animation:coinSpin 3s linear infinite;}
+@keyframes coinSpin{0%,100%{transform:rotateY(0)}50%{transform:rotateY(180deg)}}
+.coin-count{font-family:'Pacifico',cursive;font-size:1.4rem;color:var(--gold);}
+.coin-label{color:rgba(255,215,0,.7);font-size:.75rem;font-weight:700;}
+.streak-bar{display:flex;align-items:center;gap:5px;}
+.streak-dot{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.25);transition:all .3s cubic-bezier(.34,1.56,.64,1);}
+.streak-dot.lit{background:var(--gold);border-color:#FF6B9D;box-shadow:0 0 10px var(--gold);transform:scale(1.3);}
+.table-badge{background:linear-gradient(135deg,#FF6B9D,#C084FC);border-radius:20px;padding:6px 18px;color:white;font-family:'Pacifico',cursive;font-size:1rem;}
+
+.score-row{display:flex;justify-content:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+.sbox{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:7px 16px;min-width:80px;}
+.slabel{color:rgba(255,255,255,.55);font-size:.65rem;text-transform:uppercase;letter-spacing:2px;}
+.snum{font-family:'Pacifico',cursive;font-size:1.6rem;color:var(--gold);}
+
+.prog-wrap{background:rgba(255,255,255,.1);border-radius:20px;height:10px;overflow:hidden;margin-bottom:16px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#2DD4BF,#C084FC);border-radius:20px;transition:width .5s;box-shadow:0 0 8px #2DD4BF;}
+
+.star-row{display:flex;justify-content:center;gap:5px;margin-bottom:14px;}
+.sstar{font-size:1.4rem;opacity:.2;transition:all .4s cubic-bezier(.34,1.56,.64,1);}
+.sstar.on{opacity:1;filter:drop-shadow(0 0 6px gold);transform:scale(1.2);}
+
+.game-card{background:var(--card);border:3px solid var(--border);border-radius:32px;padding:28px 20px;backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.4);margin-bottom:16px;}
+.ptag{font-size:.8rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:4px 14px;border-radius:20px;display:inline-block;margin-bottom:10px;}
+.ptag.easy{background:rgba(45,212,191,.2);color:#2DD4BF;}
+.ptag.med{background:rgba(192,132,252,.2);color:#C084FC;}
+.ptag.hard{background:rgba(255,107,157,.2);color:#FF6B9D;}
+
+.equation{font-family:'Pacifico',cursive;font-size:clamp(3rem,10vw,5.5rem);color:white;margin:10px 0;letter-spacing:4px;text-shadow:0 0 30px rgba(255,255,255,.2);}
+.equation .n1{color:#FF6B9D;}
+.equation .op{color:#2DD4BF;}
+.equation .n2{color:#C084FC;}
+.equation .eq{color:var(--gold);}
+.equation .q{color:#FFB3D1;display:inline-block;animation:qpulse 1s infinite;}
+@keyframes qpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;}
+.obtn{font-family:'Pacifico',cursive;font-size:clamp(1.5rem,4vw,2.2rem);padding:15px 10px;border:none;border-radius:20px;cursor:pointer;transition:transform .15s,box-shadow .15s;color:white;}
+.obtn:nth-child(1){background:linear-gradient(135deg,#FF6B9D,#e91e63);}
+.obtn:nth-child(2){background:linear-gradient(135deg,#2DD4BF,#0891B2);}
+.obtn:nth-child(3){background:linear-gradient(135deg,#C084FC,#7C3AED);}
+.obtn:nth-child(4){background:linear-gradient(135deg,#FFD700,#FF9800);}
+.obtn:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 12px 28px rgba(0,0,0,.3);}
+.obtn:active{transform:scale(.96);}
+.obtn.correct{animation:correctPop .6s ease;background:linear-gradient(135deg,#06D6A0,#059669)!important;}
+.obtn.wrong{animation:wrongShake .5s ease;background:#ef4444!important;}
+@keyframes correctPop{0%{transform:scale(1)}35%{transform:scale(1.35) rotate(6deg)}65%{transform:scale(1.1) rotate(-3deg)}100%{transform:scale(1)}}
+@keyframes wrongShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-12px)}40%{transform:translateX(12px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+
+.feedback{font-family:'Pacifico',cursive;font-size:1.5rem;min-height:48px;display:flex;align-items:center;justify-content:center;margin-top:14px;transition:all .3s;}
+.feedback.ok{color:#06D6A0;}
+.feedback.err{color:#ff6b6b;}
+
+.bottom-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:4px;}
+.ghost-btn{background:rgba(255,255,255,.08);border:2px solid var(--border);color:rgba(255,255,255,.7);font-family:'Nunito',sans-serif;font-weight:700;font-size:.9rem;padding:9px 20px;border-radius:18px;cursor:pointer;}
+.shop-btn{background:linear-gradient(135deg,var(--gold),#FF9800);color:#1a0525;font-family:'Pacifico',cursive;font-size:.95rem;padding:9px 22px;border-radius:18px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(255,215,0,.4);transition:transform .2s;}
+.shop-btn:hover{transform:scale(1.05);}
+
+/* ===== CONFETTI ===== */
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden;}
+.cp{position:absolute;top:-20px;border-radius:3px;animation:cfFall linear forwards;}
+@keyframes cfFall{0%{transform:translateY(0) rotate(0) translateX(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg) translateX(var(--drift));opacity:0}}
+
+/* ===== AVATAR en juego ===== */
+.avatar-game{display:flex;justify-content:center;margin-bottom:10px;}
+
+/* ===== MONEDAS GANADAS POPUP ===== */
+.coins-popup{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
+  z-index:900;background:linear-gradient(135deg,#2d1040,#1a0525);
+  border:3px solid var(--gold);border-radius:32px;padding:32px 36px;
+  text-align:center;box-shadow:0 0 60px rgba(255,215,0,.4);
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
+}
+.coins-popup.show{transform:translate(-50%,-50%) scale(1);pointer-events:all;}
+.cp-title{font-family:'Pacifico',cursive;font-size:2.2rem;color:var(--gold);margin-bottom:8px;}
+.cp-coins{font-size:3.5rem;margin:10px 0;animation:coinBounce .5s ease-in-out infinite alternate;}
+@keyframes coinBounce{from{transform:translateY(0)}to{transform:translateY(-10px)}}
+.cp-text{color:white;font-size:1.1rem;font-weight:700;margin-bottom:20px;}
+.cp-total{color:var(--gold);font-size:1.3rem;font-family:'Pacifico',cursive;}
+.cp-btn{font-family:'Pacifico',cursive;font-size:1.2rem;background:linear-gradient(135deg,var(--gold),#FF9800);color:#1a0525;border:none;border-radius:28px;padding:12px 36px;cursor:pointer;box-shadow:0 6px 20px rgba(255,215,0,.4);}
+
+/* ===== TIENDA DE AVATARES ===== */
+#screen-shop{position:fixed;inset:0;z-index:800;background:rgba(10,4,30,.95);backdrop-filter:blur(10px);display:none;flex-direction:column;align-items:center;padding:20px 12px;overflow-y:auto;}
+#screen-shop.open{display:flex;}
+.shop-title{font-family:'Pacifico',cursive;font-size:2.2rem;background:linear-gradient(135deg,var(--gold),#FF6B9D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.shop-coins-bar{display:flex;align-items:center;gap:8px;margin-bottom:20px;background:rgba(255,215,0,.12);border:2px solid rgba(255,215,0,.3);border-radius:20px;padding:7px 20px;}
+.shop-section-title{color:rgba(255,255,255,.5);font-size:.75rem;text-transform:uppercase;letter-spacing:3px;margin:16px 0 10px;width:100%;text-align:left;max-width:700px;}
+.items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px;width:100%;max-width:700px;margin-bottom:8px;}
+.item-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:14px 10px;cursor:pointer;transition:all .2s;position:relative;text-align:center;}
+.item-card:hover{transform:translateY(-4px);border-color:var(--rose);}
+.item-card.owned{border-color:var(--gold);}
+.item-card.equipped{border-color:#2DD4BF;box-shadow:0 0 16px rgba(45,212,191,.4);}
+.item-card.locked{opacity:.5;cursor:not-allowed;}
+.item-preview{font-size:2.8rem;margin-bottom:6px;display:block;}
+.item-name{color:white;font-size:.85rem;font-weight:700;margin-bottom:4px;}
+.item-price{color:var(--gold);font-size:.8rem;font-weight:700;}
+.item-owned{color:#2DD4BF;font-size:.75rem;font-weight:700;}
+.equipped-badge{position:absolute;top:6px;right:8px;background:#2DD4BF;color:#1a0525;font-size:.6rem;font-weight:900;padding:2px 7px;border-radius:10px;text-transform:uppercase;}
+.shop-close-btn{font-family:'Pacifico',cursive;font-size:1.1rem;background:linear-gradient(135deg,#FF6B9D,#C084FC);color:white;border:none;border-radius:28px;padding:12px 40px;cursor:pointer;margin-top:20px;box-shadow:0 6px 20px rgba(255,107,157,.4);}
+
+/* ===== AVATAR SVG ===== */
+.avatar-wrap{position:relative;display:inline-block;width:160px;height:200px;}
+.avatar-wrap.large{width:220px;height:280px;}
+.av-svg{width:100%;height:100%;}
+
+/* ===== VICTORIA ===== */
+#screen-victory{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;}
+.vict-title{font-family:'Pacifico',cursive;font-size:clamp(2.5rem,8vw,4.5rem);background:linear-gradient(135deg,var(--gold),#FF6B9D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:victGlow .8s ease infinite alternate;}
+@keyframes victGlow{from{filter:drop-shadow(0 0 10px rgba(255,215,0,.3))}to{filter:drop-shadow(0 0 30px rgba(255,215,0,.8))}}
+.vict-emoji{font-size:5rem;margin:16px 0;animation:float 2s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.vict-again-btn{font-family:'Pacifico',cursive;font-size:1.3rem;background:linear-gradient(135deg,#2DD4BF,#059669);color:white;border:none;border-radius:30px;padding:14px 44px;cursor:pointer;margin:8px;box-shadow:0 6px 20px rgba(45,212,191,.4);}
+.vict-shop-btn{font-family:'Pacifico',cursive;font-size:1.3rem;background:linear-gradient(135deg,var(--gold),#FF9800);color:#1a0525;border:none;border-radius:30px;padding:14px 44px;cursor:pointer;margin:8px;box-shadow:0 6px 20px rgba(255,215,0,.4);}
+
+/* ===== TABLE SELECT ===== */
+#screen-table-select{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;}
+.ts-title{font-family:'Pacifico',cursive;font-size:2rem;color:var(--gold);margin-bottom:20px;}
+.ts-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:500px;width:100%;}
+.ts-btn{font-family:'Pacifico',cursive;font-size:1.4rem;padding:18px 10px;border:none;border-radius:20px;cursor:pointer;color:white;background:linear-gradient(135deg,#FF6B9D,#C084FC);transition:transform .15s,box-shadow .15s;box-shadow:0 4px 14px rgba(255,107,157,.3);}
+.ts-btn:hover{transform:translateY(-4px) scale(1.06);}
+
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+<div class="star-bg" id="star-bg"></div>
+<div class="confetti-wrap" id="confetti"></div>
+
+<!-- MONEDAS POPUP -->
+<div class="coins-popup" id="coins-popup">
+  <div class="cp-title">🎉 ¡5 seguidas!</div>
+  <div class="cp-coins">🪙🪙🪙🪙🪙</div>
+  <div class="cp-text">¡Ganaste <strong>5 monedas</strong>, Alessia!</div>
+  <div class="cp-total" id="cp-total-text">Total: 0 🪙</div>
+  <br>
+  <button class="cp-btn" onclick="closeCoinsPopup()">¡Genial! ✨</button>
+</div>
+
+<!-- TIENDA -->
+<div id="screen-shop">
+  <div class="shop-title">🛍️ Mi Tienda ✨</div>
+  <div class="shop-coins-bar">
+    <span style="font-size:1.4rem">🪙</span>
+    <span style="font-family:'Pacifico',cursive;color:var(--gold);font-size:1.3rem" id="shop-coins-display">0</span>
+    <span style="color:rgba(255,215,0,.7);font-size:.8rem;font-weight:700">monedas</span>
+  </div>
+
+  <!-- Avatar preview grande en tienda -->
+  <div id="shop-avatar-preview" style="margin-bottom:16px;"></div>
+
+  <div class="shop-section-title" style="max-width:700px">👧 Avatares</div>
+  <div class="items-grid" id="avatars-grid"></div>
+
+  <div class="shop-section-title" style="max-width:700px">👗 Ropa</div>
+  <div class="items-grid" id="clothes-grid"></div>
+
+  <div class="shop-section-title" style="max-width:700px">💄 Accesorios</div>
+  <div class="items-grid" id="acc-grid"></div>
+
+  <button class="shop-close-btn" onclick="closeShop()">← Volver al juego</button>
+</div>
+
+<!-- PORTADA -->
+<div class="screen active" id="screen-cover" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+  <div class="music-notes"><span>🎵</span><span>🎶</span><span>🎵</span></div>
+  <div class="cover-title">Música y<br>Números</div>
+  <div class="cover-sub">✨ Para Alessia ✨</div>
+  <button class="cover-btn" onclick="showSong()">🎵 ¡Empezar!</button>
+</div>
+
+<!-- CANCIÓN INTRO -->
+<div class="screen" id="screen-song" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+  <div class="song-title">🎶 ¡Cantemos las tablas! 🎶</div>
+  <div class="lyrics-box">
+    <div class="progress-song"><div class="progress-song-fill" id="song-prog" style="width:0%"></div></div>
+    <div id="lyrics-container"></div>
+  </div>
+  <br>
+  <button class="song-skip-btn" onclick="skipSong()">Saltar ⏭️</button>
+</div>
+
+<!-- BIENVENIDA -->
+<div class="screen" id="screen-welcome" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+  <div style="font-size:5rem;animation:float 2s ease-in-out infinite;">🌟</div>
+  <div class="welcome-text">
+    ¡Hola <span>Alessia</span>! 👋<br>
+    Vamos a repasar las<br>
+    <span>tablas de multiplicar</span> 🎯
+  </div>
+  <div style="margin:16px 0;" id="welcome-avatar"></div>
+  <button class="start-game-btn" onclick="goTableSelect()">¡Vamos! 🚀</button>
+</div>
+
+<!-- SELECCIÓN DE TABLA -->
+<div class="screen" id="screen-table-select" style="display:none;">
+  <div class="ts-title">🎯 ¿Qué tabla practicamos?</div>
+  <div style="margin-bottom:16px;" id="ts-avatar"></div>
+  <div class="ts-grid" id="ts-grid"></div>
+  <br>
+  <button class="ghost-btn" onclick="openShop()">🛍️ Tienda (Ver mi avatar)</button>
+</div>
+
+<!-- JUEGO -->
+<div class="screen" id="screen-game" style="display:none;">
+  <div class="top-bar">
+    <div class="table-badge" id="table-badge">Tabla del ×2</div>
+    <div class="streak-bar" id="streak-bar"></div>
+    <div class="coin-display">
+      <span class="coin-icon">🪙</span>
+      <div><div class="coin-count" id="coin-count">0</div><div class="coin-label">monedas</div></div>
+    </div>
+  </div>
+  <div class="score-row">
+    <div class="sbox"><div class="slabel">✅ Bien</div><div class="snum" id="sc-correct">0</div></div>
+    <div class="sbox"><div class="slabel">🎯 Pregunta</div><div class="snum" id="sc-qnum">1/10</div></div>
+    <div class="sbox"><div class="slabel">⭐ Puntos</div><div class="snum" id="sc-points">0</div></div>
+  </div>
+  <div class="star-row" id="star-row"></div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog-fill" style="width:10%"></div></div>
+  <div class="avatar-game" id="avatar-game"></div>
+  <div class="game-card">
+    <div class="ptag easy" id="ptag">Tabla ×2</div>
+    <div class="equation">
+      <span class="n1" id="eq-n1">3</span>
+      <span class="op"> × </span>
+      <span class="n2" id="eq-n2">4</span>
+      <span class="eq"> = </span>
+      <span class="q">?</span>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+  <div class="bottom-row">
+    <button class="ghost-btn" onclick="goTableSelect()">← Cambiar tabla</button>
+    <button class="shop-btn" onclick="openShop()">🛍️ Tienda</button>
+  </div>
+</div>
+
+<!-- VICTORIA -->
+<div class="screen" id="screen-victory" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+  <div class="vict-emoji">🏆</div>
+  <div class="vict-title">¡CAMPEONA!</div>
+  <p style="color:rgba(255,255,255,.85);font-size:1.2rem;font-weight:700;margin:14px 0;">
+    ¡Alessia eres increíble! 🌟<br>
+    <span id="v-correct"></span> correctas · <span id="v-points" style="color:var(--gold)">0</span> pts
+  </p>
+  <div id="v-stars" style="font-size:2.5rem;margin:10px 0;"></div>
+  <div id="v-avatar" style="margin:10px 0;"></div>
+  <div style="display:flex;flex-wrap:wrap;justify-content:center;">
+    <button class="vict-again-btn" onclick="restartSameTable()">🔄 ¡Otra vez!</button>
+    <button class="vict-shop-btn" onclick="openShop()">🛍️ Tienda</button>
+  </div>
+  <button class="ghost-btn" style="margin-top:12px" onclick="goTableSelect()">🔢 Cambiar tabla</button>
+</div>
+
+<script>
+// ============ STARS ============
+const starBg=document.getElementById('star-bg');
+for(let i=0;i<70;i++){
+  const s=document.createElement('div');s.className='s';
+  const sz=Math.random()*4+1;
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;animation-delay:${Math.random()*3}s;animation-duration:${1.5+Math.random()*2}s;`;
+  starBg.appendChild(s);
+}
+
+// ============ AUDIO ============
+let soundOn=true;
+let actx=null;
+function getCtx(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();return actx;}
+function tone(f,t,d,v=0.3,delay=0){
+  if(!soundOn)return;
+  try{
+    const c=getCtx();const o=c.createOscillator();const g=c.createGain();
+    o.connect(g);g.connect(c.destination);o.type=t;
+    o.frequency.setValueAtTime(f,c.currentTime+delay);
+    g.gain.setValueAtTime(v,c.currentTime+delay);
+    g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+delay+d);
+    o.start(c.currentTime+delay);o.stop(c.currentTime+delay+d);
+  }catch(e){}
+}
+function playCorrect(){[523,659,784,1047].forEach((f,i)=>tone(f,'sine',.2,.35,i*.1));setTimeout(()=>[784,1047,1319].forEach((f,i)=>tone(f,'triangle',.15,.25,i*.08)),500);}
+function playWrong(){tone(250,'sawtooth',.15,.3);setTimeout(()=>tone(200,'sawtooth',.2,.25),180);}
+function playClick(){tone(700,'sine',.07,.12);}
+function playCoin(){[523,659,784,1047,1319].forEach((f,i)=>tone(f,'sine',.18,.38,i*.09));}
+function playVictory(){[523,659,784,659,784,1047,1319].forEach((f,i)=>tone(f,'sine',.22,.38,i*.13));}
+function playUnlock(){[392,523,659,784,1047,1319,1568].forEach((f,i)=>tone(f,'sine',.28,.4,i*.11));}
+
+// ============ SONGS (tablas cantadas) ============
+const SONG_LINES=[
+  {t:'🎵 Uno por uno es uno... uno!',d:1400},
+  {t:'Dos por dos son cuatro... dos!',d:1400},
+  {t:'Tres por tres son nueve... tres!',d:1400},
+  {t:'Cuatro por cuatro, dieciséis... cuatro!',d:1500},
+  {t:'Cinco por cinco, veinticinco... cinco!',d:1500},
+  {t:'',d:600},
+  {t:'🎶 Las tablas son música para el corazón',d:1800},
+  {t:'¡Con Alessia aprendemos la multiplicación! 🌟',d:2000},
+  {t:'',d:600},
+  {t:'Seis, siete, ocho, nueve, diez...',d:1500},
+  {t:'¡Las tablas son geniales! ¡Tú también! ✨',d:2000},
+];
+
+let songIdx=0,songTimer=null;
+function showSong(){
+  showScreen('screen-song');
+  playSongIntro();
+  songIdx=0;
+  renderSongLine();
+}
+function playSongIntro(){
+  // Melodía simple tipo canción
+  const mel=[523,587,659,698,784,880,988,1047];
+  mel.forEach((f,i)=>tone(f,'sine',.25,.3,i*.18));
+  setTimeout(()=>mel.reverse().forEach((f,i)=>tone(f,'triangle',.2,.25,i*.16)),1600);
+}
+function renderSongLine(){
+  if(songIdx>=SONG_LINES.length){setTimeout(skipSong,500);return;}
+  const container=document.getElementById('lyrics-container');
+  container.innerHTML='';
+  // Show up to 4 lines, highlight current
+  const start=Math.max(0,songIdx-2);
+  for(let i=start;i<=Math.min(songIdx,SONG_LINES.length-1);i++){
+    const div=document.createElement('div');div.className='lyric-line';
+    div.innerHTML=SONG_LINES[i].t||'&nbsp;';
+    if(i===songIdx)setTimeout(()=>div.classList.add('show'),50);
+    else div.classList.add('show');
+    div.style.color=i===songIdx?'#FFD700':'rgba(255,255,255,0.5)';
+    container.appendChild(div);
+  }
+  const prog=(songIdx/SONG_LINES.length)*100;
+  document.getElementById('song-prog').style.width=prog+'%';
+  // Play note for this line
+  if(SONG_LINES[songIdx].t) tone(400+songIdx*60,'sine',.3,.2);
+  songTimer=setTimeout(()=>{songIdx++;renderSongLine();},SONG_LINES[songIdx].d);
+}
+function skipSong(){
+  if(songTimer)clearTimeout(songTimer);
+  showWelcome();
+}
+
+// ============ AVATAR SYSTEM ============
+// Avatar state stored in memory
+const state={
+  coins:0,
+  streak:0,
+  currentAvatarId:'avatar1',
+  equippedClothes:null,
+  equippedAcc:null,
+  ownedAvatars:['avatar1'],
+  ownedClothes:[],
+  ownedAcc:[],
+};
+
+const AVATARS=[
+  {id:'avatar1',name:'Alessia',skin:'#FDBCB4',hair:'#4A2C2A',hairStyle:'long',free:true,
+   outfit:'#FF9EC4',outfitStyle:'dress'},
+  {id:'avatar2',name:'Luna',skin:'#F5CBA7',hair:'#2C3E50',hairStyle:'curly',price:20,
+   outfit:'#A8D8EA',outfitStyle:'casual'},
+  {id:'avatar3',name:'Valentina',skin:'#C8A882',hair:'#6B3A2A',hairStyle:'braids',price:20,
+   outfit:'#B5EAD7',outfitStyle:'sporty'},
+  {id:'avatar4',name:'Sofía',skin:'#FFDAB9',hair:'#8B4513',hairStyle:'ponytail',price:20,
+   outfit:'#C9B1FF',outfitStyle:'fancy'},
+];
+
+const CLOTHES=[
+  {id:'cl1',name:'Vestido Rosa',emoji:'👗',price:10,color:'#FF9EC4'},
+  {id:'cl2',name:'Overol Azul',emoji:'🦺',price:10,color:'#6AABFF'},
+  {id:'cl3',name:'Suéter Lila',emoji:'🧥',price:15,color:'#C9B1FF'},
+  {id:'cl4',name:'Vestido Dorado',emoji:'✨',price:20,color:'#FFD700'},
+];
+
+const ACCESSORIES=[
+  {id:'ac1',name:'Corona 👑',emoji:'👑',price:10},
+  {id:'ac2',name:'Arcoíris 🌈',emoji:'🌈',price:10},
+  {id:'ac3',name:'Estrella ⭐',emoji:'⭐',price:10},
+  {id:'ac4',name:'Flores 🌸',emoji:'🌸',price:15},
+  {id:'ac5',name:'Diadema 🎀',emoji:'🎀',price:15},
+  {id:'ac6',name:'Mariposa 🦋',emoji:'🦋',price:20},
+];
+
+// ---- Draw SVG avatar ----
+function drawAvatar(avatarId, clothesId, accId, size='normal'){
+  const av=AVATARS.find(a=>a.id===avatarId)||AVATARS[0];
+  const cl=clothesId?CLOTHES.find(c=>c.id===clothesId):null;
+  const ac=accId?ACCESSORIES.find(a=>a.id===accId):null;
+  const outfitColor=cl?cl.color:av.outfit;
+  const isLarge=size==='large';
+  const w=isLarge?220:160, h=isLarge?280:200;
+  // scale factor
+  const sc=isLarge?1.38:1;
+  const cx=80, cy=isLarge?100:72;
+
+  const accEmoji=ac?ac.emoji:'';
+  const hairPaths={
+    long:`<ellipse cx="${cx}" cy="${cy-34}" rx="30" ry="14" fill="${av.hair}"/>
+          <rect x="${cx-30}" y="${cy-30}" width="9" height="55" rx="4" fill="${av.hair}"/>
+          <rect x="${cx+21}" y="${cy-30}" width="9" height="55" rx="4" fill="${av.hair}"/>`,
+    curly:`<ellipse cx="${cx}" cy="${cy-34}" rx="32" ry="16" fill="${av.hair}"/>
+           <circle cx="${cx-28}" cy="${cy-20}" r="11" fill="${av.hair}"/>
+           <circle cx="${cx+28}" cy="${cy-20}" r="11" fill="${av.hair}"/>
+           <circle cx="${cx-24}" cy="${cy+2}" r="9" fill="${av.hair}"/>
+           <circle cx="${cx+24}" cy="${cy+2}" r="9" fill="${av.hair}"/>`,
+    braids:`<ellipse cx="${cx}" cy="${cy-34}" rx="28" ry="14" fill="${av.hair}"/>
+            <rect x="${cx-26}" y="${cy-28}" width="7" height="70" rx="3" fill="${av.hair}"/>
+            <rect x="${cx+19}" y="${cy-28}" width="7" height="70" rx="3" fill="${av.hair}"/>
+            <ellipse cx="${cx-22}" cy="${cy+44}" rx="5" ry="8" fill="${av.hair}"/>
+            <ellipse cx="${cx+22}" cy="${cy+44}" rx="5" ry="8" fill="${av.hair}"/>`,
+    ponytail:`<ellipse cx="${cx}" cy="${cy-34}" rx="28" ry="14" fill="${av.hair}"/>
+              <ellipse cx="${cx+30}" cy="${cy-28}" rx="8" ry="18" fill="${av.hair}" transform="rotate(-20,${cx+30},${cy-28})"/>`,
+  };
+
+  const outfitPaths={
+    dress:`<path d="M${cx-28} ${cy+36} Q${cx} ${cy+30} ${cx+28} ${cy+36} L${cx+36} ${cy+90} Q${cx} ${cy+82} ${cx-36} ${cy+90} Z" fill="${outfitColor}"/>`,
+    casual:`<rect x="${cx-26}" y="${cy+34}" width="52" height="38" rx="8" fill="${outfitColor}"/>
+            <rect x="${cx-20}" y="${cy+72}" width="16" height="22" rx="4" fill="${outfitColor}" opacity=".85"/>
+            <rect x="${cx+4}" y="${cy+72}" width="16" height="22" rx="4" fill="${outfitColor}" opacity=".85"/>`,
+    sporty:`<rect x="${cx-26}" y="${cy+34}" width="52" height="32" rx="8" fill="${outfitColor}"/>
+            <rect x="${cx-22}" y="${cy+66}" width="18" height="26" rx="5" fill="${outfitColor}" opacity=".8"/>
+            <rect x="${cx+4}" y="${cy+66}" width="18" height="26" rx="5" fill="${outfitColor}" opacity=".8"/>`,
+    fancy:`<path d="M${cx-30} ${cy+34} Q${cx} ${cy+28} ${cx+30} ${cy+34} L${cx+40} ${cy+95} Q${cx} ${cy+86} ${cx-40} ${cy+95} Z" fill="${outfitColor}"/>
+           <ellipse cx="${cx}" cy="${cy+34}" rx="32" ry="8" fill="${outfitColor}" opacity=".7"/>`,
+  };
+
+  const svg=`<svg viewBox="0 0 160 ${isLarge?220:180}" xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
+    <!-- Shadow -->
+    <ellipse cx="${cx}" cy="${cy+98}" rx="34" ry="8" fill="rgba(0,0,0,.15)"/>
+    <!-- Hair back -->
+    ${hairPaths[av.hairStyle]||hairPaths.long}
+    <!-- Neck -->
+    <rect x="${cx-9}" y="${cy+20}" width="18" height="18" rx="4" fill="${av.skin}"/>
+    <!-- Body/outfit -->
+    ${outfitPaths[av.outfitStyle]||outfitPaths.dress}
+    <!-- Arms -->
+    <rect x="${cx-42}" y="${cy+36}" width="16" height="34" rx="8" fill="${av.skin}"/>
+    <rect x="${cx+26}" y="${cy+36}" width="16" height="34" rx="8" fill="${av.skin}"/>
+    <!-- Head -->
+    <ellipse cx="${cx}" cy="${cy}" rx="28" ry="30" fill="${av.skin}"/>
+    <!-- Cheeks -->
+    <ellipse cx="${cx-18}" cy="${cy+10}" rx="7" ry="5" fill="#FFB3D1" opacity=".5"/>
+    <ellipse cx="${cx+18}" cy="${cy+10}" rx="7" ry="5" fill="#FFB3D1" opacity=".5"/>
+    <!-- Eyes -->
+    <ellipse cx="${cx-10}" cy="${cy-2}" rx="5" ry="6" fill="white"/>
+    <ellipse cx="${cx+10}" cy="${cy-2}" rx="5" ry="6" fill="white"/>
+    <circle cx="${cx-10}" cy="${cy-1}" r="3.5" fill="#3D2314"/>
+    <circle cx="${cx+10}" cy="${cy-1}" r="3.5" fill="#3D2314"/>
+    <circle cx="${cx-9}" cy="${cy-2}" r="1.2" fill="white"/>
+    <circle cx="${cx+11}" cy="${cy-2}" r="1.2" fill="white"/>
+    <!-- Eyebrows -->
+    <path d="M${cx-16} ${cy-10} Q${cx-10} ${cy-14} ${cx-4} ${cy-10}" stroke="#4A2C2A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M${cx+4} ${cy-10} Q${cx+10} ${cy-14} ${cx+16} ${cy-10}" stroke="#4A2C2A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Nose -->
+    <circle cx="${cx}" cy="${cy+8}" r="2.5" fill="${av.skin}" opacity=".6"/>
+    <!-- Smile -->
+    <path d="M${cx-10} ${cy+16} Q${cx} ${cy+24} ${cx+10} ${cy+16}" stroke="#E07070" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Teeth -->
+    <path d="M${cx-7} ${cy+16} Q${cx} ${cy+22} ${cx+7} ${cy+16}" fill="white" opacity=".7"/>
+    <!-- Hair front -->
+    <path d="M${cx-28} ${cy-16} Q${cx-18} ${cy-46} ${cx} ${cy-44} Q${cx+18} ${cy-46} ${cx+28} ${cy-16}" fill="${av.hair}"/>
+    <!-- Accessory -->
+    ${accEmoji?`<text x="${cx}" y="${cy-50}" font-size="22" text-anchor="middle">${accEmoji}</text>`:''}
+  </svg>`;
+  return svg;
+}
+
+function renderAvatarTo(elemId, size='normal'){
+  const el=document.getElementById(elemId);
+  if(!el)return;
+  el.innerHTML=drawAvatar(state.currentAvatarId,state.equippedClothes,state.equippedAcc,size);
+}
+
+// ============ SCREEN MANAGEMENT ============
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.style.display='none';s.classList.remove('active');});
+  const el=document.getElementById(id);
+  if(el){el.style.display='flex';el.classList.add('active');}
+  if(id==='screen-game')el.style.display='block';
+  if(id==='screen-table-select')el.style.display='flex';
+}
+
+function showWelcome(){
+  showScreen('screen-welcome');
+  renderAvatarTo('welcome-avatar');
+}
+
+function goTableSelect(){
+  showScreen('screen-table-select');
+  renderAvatarTo('ts-avatar');
+  const grid=document.getElementById('ts-grid');grid.innerHTML='';
+  for(let i=1;i<=10;i++){
+    const btn=document.createElement('button');btn.className='ts-btn';btn.textContent='×'+i;
+    btn.onclick=()=>{playClick();startGame(i);};
+    grid.appendChild(btn);
+  }
+}
+
+// ============ GAME STATE ============
+let currentTable=2,currentQ=0,correctCount=0,gamePoints=0,gameAnswered=false;
+const TOTAL=10;
+const CELEBRATION=['🎉 ¡GENIAL, ALESSIA! 🎉','🌟 ¡SÚPER BIEN! 🌟','🎵 ¡PERFECTA! 🎵','⭐ ¡CORRECTA! ¡BRAVO! ⭐','💫 ¡CAMPEONA! 💫','🎊 ¡INCREÍBLE! 🎊','💪 ¡QUÉ INTELIGENTE! 💪','✨ ¡ASOMBROSA! ✨'];
+const WRONG=['😊 ¡Casi! Inténtalo','💙 ¡Tú puedes, Alessia!','🌈 ¡Sigue intentando!','😅 ¡No pasa nada!'];
+
+function startGame(table){
+  currentTable=table;currentQ=0;correctCount=0;gamePoints=0;state.streak=0;
+  showScreen('screen-game');
+  // Stars row
+  const row=document.getElementById('star-row');row.innerHTML='';
+  for(let i=0;i<TOTAL;i++){const s=document.createElement('span');s.className='sstar';s.id=`gs-${i}`;s.textContent='⭐';row.appendChild(s);}
+  // Streak dots
+  const sbar=document.getElementById('streak-bar');sbar.innerHTML='';
+  for(let i=0;i<5;i++){const d=document.createElement('div');d.className='streak-dot';d.id=`sd-${i}`;sbar.appendChild(d);}
+  document.getElementById('table-badge').textContent=`Tabla del ×${table}`;
+  document.getElementById('ptag').textContent=`Tabla ×${table}`;
+  document.getElementById('ptag').className='ptag '+(table<=3?'easy':table<=6?'med':'hard');
+  renderAvatarTo('avatar-game');
+  updateGameUI();nextQuestion();
+}
+
+function restartSameTable(){startGame(currentTable);}
+
+function nextQuestion(){
+  if(currentQ>=TOTAL){showVictory();return;}
+  gameAnswered=false;
+  const n2=Math.floor(Math.random()*10)+1;
+  document.getElementById('eq-n1').textContent=currentTable;
+  document.getElementById('eq-n2').textContent=n2;
+  document.getElementById('feedback').textContent='';
+  document.getElementById('feedback').className='feedback';
+  window._correctAnswer=currentTable*n2;
+  generateOpts(window._correctAnswer);
+  updateGameUI();
+  document.getElementById('prog-fill').style.width=`${((currentQ+1)/TOTAL)*100}%`;
+}
+
+function generateOpts(answer){
+  const div=document.getElementById('opts');div.innerHTML='';
+  const set=new Set([answer]);
+  while(set.size<4){
+    const d=(Math.random()>.5?1:-1)*(Math.floor(Math.random()*8)+1);
+    const w=answer+d;if(w>0)set.add(w);
+  }
+  [...set].sort(()=>Math.random()-.5).forEach(v=>{
+    const b=document.createElement('button');b.className='obtn';b.textContent=v;
+    b.onclick=()=>{playClick();checkAnswer(v,b);};
+    div.appendChild(b);
+  });
+}
+
+function checkAnswer(val,btn){
+  if(gameAnswered)return;gameAnswered=true;
+  const fb=document.getElementById('feedback');
+  if(val===window._correctAnswer){
+    btn.classList.add('correct');
+    fb.textContent=CELEBRATION[Math.floor(Math.random()*CELEBRATION.length)];
+    fb.className='feedback ok';
+    correctCount++;gamePoints+=10;
+    state.streak++;
+    document.getElementById(`gs-${currentQ}`)?.classList.add('on');
+    // Update streak dots
+    for(let i=0;i<5;i++){const d=document.getElementById(`sd-${i}`);if(d)d.classList.toggle('lit',i<state.streak);}
+    updateGameUI();playCorrect();confetti(35);
+
+    if(state.streak>=5){
+      // ¡5 seguidas! Ganar monedas
+      state.coins+=5;state.streak=0;
+      for(let i=0;i<5;i++){const d=document.getElementById(`sd-${i}`);if(d)d.classList.remove('lit');}
+      updateGameUI();
+      // Mostrar popup después de ver la respuesta
+      setTimeout(()=>showCoinsPopup(),1000);
+      // Continuar juego cuando cierren el popup
+    } else {
+      setTimeout(()=>{currentQ++;nextQuestion();},1900);
+    }
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent=WRONG[Math.floor(Math.random()*WRONG.length)];
+    fb.className='feedback err';
+    state.streak=0;
+    for(let i=0;i<5;i++){const d=document.getElementById(`sd-${i}`);if(d)d.classList.remove('lit');}
+    playWrong();
+    setTimeout(()=>{
+      btn.classList.remove('wrong');
+      document.querySelectorAll('.obtn').forEach(b=>{if(parseInt(b.textContent)===window._correctAnswer)b.classList.add('correct');});
+      setTimeout(()=>{currentQ++;nextQuestion();},1200);
+    },700);
+  }
+}
+
+function updateGameUI(){
+  document.getElementById('coin-count').textContent=state.coins;
+  document.getElementById('sc-correct').textContent=correctCount;
+  document.getElementById('sc-qnum').textContent=`${currentQ+1}/${TOTAL}`;
+  document.getElementById('sc-points').textContent=gamePoints;
+}
+
+// ============ COINS POPUP ============
+function showCoinsPopup(){
+  playCoin();
+  document.getElementById('cp-total-text').textContent=`Total: ${state.coins} 🪙`;
+  document.getElementById('coins-popup').classList.add('show');
+  confetti(70);setTimeout(()=>confetti(50),500);
+}
+function closeCoinsPopup(){
+  document.getElementById('coins-popup').classList.remove('show');
+  currentQ++;nextQuestion();
+}
+
+// ============ SHOP ============
+function openShop(){
+  document.getElementById('screen-shop').classList.add('open');
+  document.getElementById('shop-coins-display').textContent=state.coins;
+  renderAvatarTo('shop-avatar-preview','large');
+  renderAvatarsGrid();renderClothesGrid();renderAccGrid();
+}
+function closeShop(){document.getElementById('screen-shop').classList.remove('open');}
+
+function renderAvatarsGrid(){
+  const grid=document.getElementById('avatars-grid');grid.innerHTML='';
+  AVATARS.forEach(av=>{
+    const owned=state.ownedAvatars.includes(av.id);
+    const equipped=state.currentAvatarId===av.id;
+    const canBuy=!owned&&state.coins>=av.price;
+    const div=document.createElement('div');
+    div.className='item-card'+(owned?' owned':'')+(equipped?' equipped':'')+((!owned&&!canBuy)?' locked':'');
+    div.innerHTML=`
+      ${equipped?'<div class="equipped-badge">Equipada</div>':''}
+      <span class="item-preview">${drawMiniAvatar(av)}</span>
+      <div class="item-name">${av.name}</div>
+      ${owned?`<div class="item-owned">✅ Tuya</div>`:`<div class="item-price">🪙 ${av.price}</div>`}
+    `;
+    if(owned&&!equipped)div.onclick=()=>equipAvatar(av.id);
+    else if(!owned&&canBuy)div.onclick=()=>buyAvatar(av.id);
+    grid.appendChild(div);
+  });
+}
+
+function drawMiniAvatar(av){
+  return `<svg viewBox="0 0 60 70" width="60" height="70">
+    <ellipse cx="30" cy="28" rx="20" ry="22" fill="${av.skin}"/>
+    <circle cx="23" cy="26" r="3" fill="#3D2314"/>
+    <circle cx="37" cy="26" r="3" fill="#3D2314"/>
+    <path d="M23 38 Q30 44 37 38" stroke="#E07070" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="30" cy="10" rx="22" ry="12" fill="${av.hair}"/>
+    <rect x="10" y="44" width="40" height="20" rx="6" fill="${av.outfit}"/>
+  </svg>`;
+}
+
+function equipAvatar(id){state.currentAvatarId=id;renderAvatarTo('shop-avatar-preview','large');renderAvatarsGrid();renderAvatarTo('avatar-game');}
+
+function buyAvatar(id){
+  const av=AVATARS.find(a=>a.id===id);if(!av||state.coins<av.price)return;
+  state.coins-=av.price;state.ownedAvatars.push(id);
+  playUnlock();confetti(50);
+  document.getElementById('shop-coins-display').textContent=state.coins;
+  equipAvatar(id);
+}
+
+function renderClothesGrid(){
+  const grid=document.getElementById('clothes-grid');grid.innerHTML='';
+  CLOTHES.forEach(cl=>{
+    const owned=state.ownedClothes.includes(cl.id);
+    const equipped=state.equippedClothes===cl.id;
+    const canBuy=!owned&&state.coins>=cl.price;
+    const div=document.createElement('div');
+    div.className='item-card'+(owned?' owned':'')+(equipped?' equipped':'')+((!owned&&!canBuy)?' locked':'');
+    div.innerHTML=`
+      ${equipped?'<div class="equipped-badge">Puesto</div>':''}
+      <span class="item-preview" style="font-size:3rem">${cl.emoji}</span>
+      <div class="item-name">${cl.name}</div>
+      ${owned?`<div class="item-owned">${equipped?'✅ Puesto':'Tócame!'}</div>`:`<div class="item-price">🪙 ${cl.price}</div>`}
+    `;
+    if(owned)div.onclick=()=>equipClothes(cl.id);
+    else if(canBuy)div.onclick=()=>buyClothes(cl.id);
+    grid.appendChild(div);
+  });
+}
+function equipClothes(id){state.equippedClothes=state.equippedClothes===id?null:id;renderAvatarTo('shop-avatar-preview','large');renderClothesGrid();renderAvatarTo('avatar-game');}
+function buyClothes(id){
+  const cl=CLOTHES.find(c=>c.id===id);if(!cl||state.coins<cl.price)return;
+  state.coins-=cl.price;state.ownedClothes.push(id);
+  playUnlock();confetti(40);
+  document.getElementById('shop-coins-display').textContent=state.coins;
+  equipClothes(id);
+}
+
+function renderAccGrid(){
+  const grid=document.getElementById('acc-grid');grid.innerHTML='';
+  ACCESSORIES.forEach(ac=>{
+    const owned=state.ownedAcc.includes(ac.id);
+    const equipped=state.equippedAcc===ac.id;
+    const canBuy=!owned&&state.coins>=ac.price;
+    const div=document.createElement('div');
+    div.className='item-card'+(owned?' owned':'')+(equipped?' equipped':'')+((!owned&&!canBuy)?' locked':'');
+    div.innerHTML=`
+      ${equipped?'<div class="equipped-badge">Puesto</div>':''}
+      <span class="item-preview" style="font-size:3rem">${ac.emoji}</span>
+      <div class="item-name">${ac.name}</div>
+      ${owned?`<div class="item-owned">${equipped?'✅ Puesto':'Tócame!'}</div>`:`<div class="item-price">🪙 ${ac.price}</div>`}
+    `;
+    if(owned)div.onclick=()=>equipAcc(ac.id);
+    else if(canBuy)div.onclick=()=>buyAcc(ac.id);
+    grid.appendChild(div);
+  });
+}
+function equipAcc(id){state.equippedAcc=state.equippedAcc===id?null:id;renderAvatarTo('shop-avatar-preview','large');renderAccGrid();renderAvatarTo('avatar-game');}
+function buyAcc(id){
+  const ac=ACCESSORIES.find(a=>a.id===id);if(!ac||state.coins<ac.price)return;
+  state.coins-=ac.price;state.ownedAcc.push(id);
+  playUnlock();confetti(40);
+  document.getElementById('shop-coins-display').textContent=state.coins;
+  equipAcc(id);
+}
+
+// ============ VICTORY ============
+function showVictory(){
+  showScreen('screen-victory');
+  document.getElementById('v-correct').textContent=`${correctCount}/${TOTAL}`;
+  document.getElementById('v-points').textContent=gamePoints;
+  const pct=correctCount/TOTAL;
+  document.getElementById('v-stars').textContent=pct>=.9?'⭐⭐⭐':pct>=.7?'⭐⭐':'⭐';
+  renderAvatarTo('v-avatar');
+  playVictory();
+  for(let i=0;i<5;i++)setTimeout(()=>confetti(50),i*350);
+}
+
+// ============ CONFETTI ============
+function confetti(n=50){
+  const wrap=document.getElementById('confetti');
+  const cols=['#FFD700','#FF6B9D','#C084FC','#2DD4BF','#FF9800','#fff'];
+  for(let i=0;i<n;i++){
+    const p=document.createElement('div');p.className='cp';
+    p.style.cssText=`left:${Math.random()*100}vw;background:${cols[~~(Math.random()*cols.length)]};width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;border-radius:${Math.random()>.5?'50%':'3px'};--drift:${(Math.random()-.5)*200}px;animation-duration:${1.5+Math.random()*1.5}s;animation-delay:${Math.random()*.4}s;`;
+    wrap.appendChild(p);setTimeout(()=>p.remove(),3200);
+  }
+}
+</script>
+</body>
+</html>
